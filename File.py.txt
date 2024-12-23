@@ -1,0 +1,58 @@
+import os
+import win32com.client
+import speech_recognition as sr
+import webbrowser
+import subprocess
+import sys
+import datetime
+
+# Initialize SAPI voice
+speaker = win32com.client.Dispatch("SAPI.SpVoice")
+
+
+def say(text):
+    """Speak the given text using SAPI."""
+    speaker.Speak(text)
+
+
+def takeCommand():
+    """Listen and recognize user command."""
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        r.pause_threshold = 0.6
+        audio = r.listen(source)
+        try:
+            print("Recognizing...")
+            query = r.recognize_google(audio, language="en-in")
+            print(f"User said: {query}")
+            return query
+        except Exception as e:
+            return "Some Error Occurred. Sorry from Jarvis"
+
+
+# Main entry point
+if __name__ == "__main__":
+    print('PyCharm')
+    say("Hello, I am Jarvis A.I.")
+    while True:
+        print("Listening...")
+        query = takeCommand()
+
+        # Open websites
+        sites = [["youtube", "https://www.youtube.com"], ["wikipedia", "https://www.wikipedia.com"]]
+        for site in sites:
+            if f"Open {site[0]}".lower() in query.lower():  # Check if user asked to open a website
+                say(f"Opening {site[0]} sir....")
+                webbrowser.open(site[1])
+
+        # Open music
+        if "open music" in query.lower():  # Check if user asked to play music
+            musicPath = r"C:\Users\syeol\Downloads\128-Singham Again Title Track - Singham Again 128 Kbps.mp3"
+            os.system(f"start {musicPath}")  # Open music file
+
+        # Tell the current time
+        if "time" in query.lower():  # Check if user asked for the time
+            strTime = datetime.datetime.now().strftime("%H:%M:%S")
+            say(f"samruddhi mam, the time is {strTime}")
+        if "Open vs code" in query.lower():
+            os.system(f"C:\Program Files (x86)\Winamp\winamp.exe")
